@@ -184,6 +184,10 @@
       box-sizing: border-box;
     }
 
+    html, body {
+      min-height: 100%;
+    }
+
     body {
       font-family: 'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
       background: var(--bg-body);
@@ -198,6 +202,200 @@
       position: relative;
       background-image:
         radial-gradient(ellipse at center, transparent 20%, var(--bg-body-deep) 100%);
+      overflow-x: hidden;
+    }
+
+    /* ============================================================
+       PRELOAD STATE — hides content until overlay is done
+    ============================================================ */
+    body.preload .page-layout,
+    body.preload .theme-switch {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       LOADING OVERLAY
+    ============================================================ */
+    #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.75rem;
+      background: var(--bg-body);
+      background-image: radial-gradient(ellipse at center, transparent 20%, var(--bg-body-deep) 100%);
+      transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                  visibility 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #loadingOverlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Loader logo / spinner */
+    .loader-logo {
+      width: 150px;
+      height: auto;
+      animation: loaderPulse 1.6s ease-in-out infinite;
+    }
+
+    .loader-logo--light { display: block; }
+    .loader-logo--dark  { display: none; }
+
+    html.dark .loader-logo--light { display: none; }
+    html.dark .loader-logo--dark  { display: block; }
+
+    @keyframes loaderPulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.06);
+        opacity: 0.75;
+      }
+    }
+
+    /* Spinner ring */
+    .loader-ring {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3px solid var(--border-soft);
+      border-top-color: var(--accent);
+      animation: spinRing 0.9s linear infinite;
+    }
+
+    @keyframes spinRing {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Loading dots */
+    .loader-dots {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .loader-dots span {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.4;
+      animation: dotBounce 1.2s ease-in-out infinite;
+    }
+
+    .loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes dotBounce {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.4;
+      }
+      40% {
+        transform: translateY(-10px);
+        opacity: 1;
+      }
+    }
+
+    .loader-text {
+      font-family: 'Lexend', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.3s ease;
+    }
+
+    /* ============================================================
+       ENTRANCE ANIMATION
+    ============================================================ */
+    @keyframes floatIn {
+      0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes slideInFromLeft {
+      0% {
+        opacity: 0;
+        transform: translateX(-40px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeInScale {
+      0% {
+        opacity: 0;
+        transform: scale(0.92);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.3);
+      }
+      70% {
+        box-shadow: 0 0 0 12px rgba(13, 148, 136, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(13, 148, 136, 0);
+      }
+    }
+
+    /* Once loaded, apply entrance animations */
+    body.loaded .brand-block {
+      animation: slideInFromLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    body.loaded .picker-card {
+      animation: floatIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: 0.1s;
+    }
+
+    body.loaded .theme-switch {
+      animation: fadeInScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      animation-delay: 0.4s;
+    }
+
+    body.loaded .field-group {
+      animation: floatIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: 0.25s;
+    }
+
+    body.loaded .calendar-section {
+      animation: floatIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: 0.4s;
+    }
+
+    body.loaded .picker-footer {
+      animation: floatIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: 0.55s;
+    }
+
+    /* Optional subtle glow on the confirm button when it becomes ready */
+    .confirm-btn.ready {
+      animation: pulseGlow 2s ease-in-out infinite;
     }
 
     /* ============================================================
@@ -1222,10 +1420,32 @@
       .brand-subtitle {
         font-size: 0.95rem;
       }
+      .loader-logo {
+        width: 110px;
+      }
     }
   </style>
 </head>
-<body>
+<body class="preload">
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div id="loadingOverlay" role="status" aria-label="Loading">
+  <img src="https://onederz.com/mobile-image/onederzlogo.webp"
+       alt=""
+       class="loader-logo loader-logo--light"
+       aria-hidden="true">
+  <img src="https://onederz.com/mobile-image/logo-white.webp"
+       alt=""
+       class="loader-logo loader-logo--dark"
+       aria-hidden="true">
+  <div class="loader-ring"></div>
+  <div class="loader-dots" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <div class="loader-text">Preparing your stay</div>
+</div>
 
 <!-- ===== THEME SWITCH ===== -->
 <div class="theme-switch">
@@ -1312,8 +1532,12 @@
 <script>
   (function() {
     /* ============================================================
-       0. THEME SWITCH
+       0. LOADING OVERLAY
     ============================================================ */
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const LOAD_TIME = 1400; // ms — adjust as needed
+
+    // Apply theme immediately (before overlay hides) so it matches
     const themeSwitch = document.getElementById('themeSwitch');
     const switchIcon = document.getElementById('switchIcon');
     const htmlEl = document.documentElement;
@@ -1352,6 +1576,21 @@
       switchIcon.className = newTheme === 'dark' ? 'fi fi-sr-sun' : 'fi fi-sr-moon';
       try { localStorage.setItem('picker-theme', newTheme); } catch (e) {}
     });
+
+    // Reveal content
+    function revealContent() {
+      if (document.body.classList.contains('loaded')) return;
+      loadingOverlay.classList.add('hidden');
+      document.body.classList.remove('preload');
+      document.body.classList.add('loaded');
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(revealContent, LOAD_TIME);
+    });
+
+    // Safety fallback
+    setTimeout(revealContent, LOAD_TIME + 3000);
 
     /* ============================================================
        1. CUSTOM DROPDOWN (with Cloudbeds property IDs)
@@ -1456,7 +1695,6 @@
     const CURRENT_YEAR = TODAY.getFullYear();
     const CURRENT_MONTH = TODAY.getMonth();
 
-    // The calendar is navigable — start offset changes when user clicks arrows
     let startMonth = { year: CURRENT_YEAR, month: CURRENT_MONTH };
 
     const monthNames = [
@@ -1498,7 +1736,6 @@
       return t > start.getTime() && t < end.getTime();
     }
 
-    // Disable any date strictly before today
     function isDisabled(date) {
       return date.getTime() < TODAY.getTime();
     }
@@ -1510,7 +1747,6 @@
       return Math.round(diff / msPerNight);
     }
 
-    // Add months to a { year, month } object
     function addMonths(base, delta) {
       const total = base.year * 12 + base.month + delta;
       return { year: Math.floor(total / 12), month: ((total % 12) + 12) % 12 };
@@ -1579,7 +1815,6 @@
     }
 
     function handleDayClick(date) {
-      // Safety: ignore if disabled
       if (isDisabled(date)) return;
 
       if (!checkInDate) {
@@ -1614,12 +1849,10 @@
       }
     }
 
-    /* ---- Build one month panel ---- */
     function createMonthBlock(year, month, { showPrev, showNext } = {}) {
       const monthDiv = document.createElement('div');
       monthDiv.className = 'month';
 
-      // ---- Month header with nav arrows ----
       const header = document.createElement('div');
       header.className = 'month-header';
 
@@ -1660,7 +1893,6 @@
       header.appendChild(nextBtn);
       monthDiv.appendChild(header);
 
-      // ---- Weekday header ----
       const weekdaysDiv = document.createElement('div');
       weekdaysDiv.className = 'weekdays';
       ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].forEach(day => {
@@ -1670,7 +1902,6 @@
       });
       monthDiv.appendChild(weekdaysDiv);
 
-      // ---- Days grid ----
       const daysDiv = document.createElement('div');
       daysDiv.className = 'days';
 
@@ -1724,25 +1955,21 @@
       return monthDiv;
     }
 
-    /* ---- Render the calendar (two months starting from startMonth) ---- */
     function renderCalendar() {
       monthsContainer.innerHTML = '';
 
       const first = startMonth;
       const second = addMonths(startMonth, 1);
 
-      // Disable "previous" arrow if startMonth is before current month
       const canGoPrev =
         first.year > CURRENT_YEAR ||
         (first.year === CURRENT_YEAR && first.month > CURRENT_MONTH);
 
-      // Left panel: prev arrow (if allowed), no next arrow
       monthsContainer.appendChild(createMonthBlock(first.year, first.month, {
         showPrev: canGoPrev,
         showNext: false
       }));
 
-      // Right panel: no prev arrow, next arrow enabled
       monthsContainer.appendChild(createMonthBlock(second.year, second.month, {
         showPrev: false,
         showNext: true
@@ -1756,7 +1983,6 @@
     /* ============================================================
        3. CONFIRM BUTTON → CLOUDBEDS
     ============================================================ */
-    // Format as YYYY-MM-DD using local date parts (avoids timezone day-shift)
     function toISODate(d) {
       const y = d.getFullYear();
       const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -1783,8 +2009,6 @@
         `&checkin=${toISODate(checkInDate)}` +
         `&checkout=${toISODate(checkOutDate)}`;
 
-      // Open in a new tab so guests keep your page
-      // (for same tab use: window.location.href = url;)
       window.open(url, '_blank', 'noopener');
     });
   })();
